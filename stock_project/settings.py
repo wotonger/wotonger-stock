@@ -53,18 +53,11 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'stock_project.wsgi.application'
 
-# Database - MySQL configuration
+# Database - SQLite (无需安装MySQL，开箱即用)
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'stock_db',           # 数据库名称，请根据实际情况修改
-        'USER': 'root',              # 数据库用户名
-        'PASSWORD': '',              # 数据库密码
-        'HOST': 'localhost',         # 数据库地址
-        'PORT': '3306',              # 端口
-        'OPTIONS': {
-            'charset': 'utf8mb4',
-        }
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
