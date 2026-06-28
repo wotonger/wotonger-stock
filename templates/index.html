@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Web - 股票数据可视化系统</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            color: #fff;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #00d2ff, #3a7bd5);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .header p {
+            color: #8899aa;
+            font-size: 1.1em;
+        }
+        .card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 25px;
+            backdrop-filter: blur(10px);
+        }
+        .card h2 {
+            color: #00d2ff;
+            margin-bottom: 15px;
+            font-size: 1.4em;
+        }
+        .card p {
+            color: #b0c4de;
+            line-height: 1.7;
+        }
+        .tech-stack {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+        .tech-tag {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #fff;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.85em;
+        }
+        .btn {
+            display: inline-block;
+            background: linear-gradient(90deg, #00d2ff, #3a7bd5);
+            color: #fff;
+            text-decoration: none;
+            padding: 12px 35px;
+            border-radius: 25px;
+            font-size: 1.05em;
+            margin-top: 10px;
+            transition: transform 0.3s;
+        }
+        .btn:hover { transform: scale(1.05); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Stock Web</h1>
+            <p>基于 Django + MySQL 的股票数据可视化系统</p>
+        </div>
+
+        <div class="card">
+            <h2>项目简介</h2>
+            <p>本项目是一个基于 Django 框架开发的股票数据可视化系统，
+               集成 MySQL 数据库存储与 ECharts 图表库进行数据展示。
+               支持K线图、折线图、成交量柱状图等多种图表类型。</p>
+        </div>
+
+        <div class="card">
+            <h2>技术栈</h2>
+            <div class="tech-stack">
+                <span class="tech-tag">Python 3.x</span>
+                <span class="tech-tag">Django 4.x</span>
+                <span class="tech-tag">MySQL</span>
+                <span class="tech-tag">ECharts</span>
+                <span class="tech-tag">HTML/CSS/JavaScript</span>
+                <span class="tech-tag">AJAX</span>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>主要功能</h2>
+            <p>&#8226; 股票实时数据展示与查询<br>
+               &#8226; ECharts 交互式 K 线图 / 折线图<br>
+               &#8226; 成交量柱状图分析<br>
+               &#8226; MySQL 数据库持久化存储<br>
+               &#8226; Django Admin 后台管理界面</p>
+            <br>
+            <a href="{% url 'stock_chart' %}" class="btn">查看股票图表 &rarr;</a>
+        </div>
+
+        <div class="card">
+            <h2>作者信息</h2>
+            <p>广东工业大学 · 大数据管理与应用专业<br>
+               作者：[请填写你的名字]</p>
+        </div>
+    </div>
+</body>
+</html>

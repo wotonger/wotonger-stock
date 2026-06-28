@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>股票数据可视化 - Stock Web</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            color: #fff;
+            min-height: 100vh;
+        }
+        .navbar {
+            background: rgba(0,0,0,0.3);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .navbar a {
+            color: #00d2ff;
+            text-decoration: none;
+            margin-right: 20px;
+        }
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 { text-align: center; color: #00d2ff; margin: 25px 0; font-size: 2em; }
+        .chart-card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 25px;
+            backdrop-filter: blur(10px);
+        }
+        .chart-title {
+            color: #e0e0e0;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+            text-align: center;
+        }
+        .chart-box { width: 100%; height: 450px; }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <strong style="color:#00d2ff;">Stock Web</strong>
+        <div>
+            <a href="{% url 'index' %}">首页</a>
+            <a href="/stock/">图表</a>
+            <a href="/admin/">管理后台</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <h1>股票数据可视化面板</h1>
+
+        <!-- K线图 -->
+        <div class="chart-card">
+            <div class="chart-title">K 线图 (Candlestick Chart)</div>
+            <div id="klineChart" class="chart-box"></div>
+        </div>
+
+        <!-- 折线图 -->
+        <div class="chart-card">
+            <div class="chart-title">收盘价走势 (Line Chart)</div>
+            <div id="lineChart" class="chart-box"></div>
+        </div>
+
+        <!-- 成交量 -->
+        <div class="chart-card">
+            <div class="chart-title">成交量 (Volume Bar Chart)</div>
+            <div id="volumeChart" class="chart-box"></div>
+        </div>
+    </div>
+
+    <script>
+        // 从 Django 模板获取数据
+        var stockData = {{ stock_json|safe }};
+
+        // ========== K线图 ==========
+        var klineData = [];
+        for (var i = 0; i < stockData.dates.length; i++) {
+            klineData.push([
+                stockData.open[i],
+                stockData.close[i],
+                stockData.low[i],
+                stockData.high[i]
+            ]);
+        }
+
+        var klineOption = {
+            backgroundColor: 'transparent',
+            tooltip: { trigger: 'axis' },
+            grid: { left: '8%', right: '3%', top: '10%', bottom: '12%' },
+            xAxis: {
+                type: 'category',
+                data: stockData.dates,
+                axisLabel: { color: '#8899aa' },
+                axisLine: { lineStyle: { color: '#334455' } },
+            },
+            yAxis: {
+                type: 'value',
+                scale: true,
+                axisLabel: { color: '#8899aa' },
+                splitLine: { lineStyle: { color: '#223344' } },
+            },
+            series: [{
+                name: 'K线',
+                type: 'candlestick',
+                data: klineData,
+                itemStyle: { color: '#ef5350', color0: '#26a69a',
+                             borderColor: '#ef5350', borderColor0: '#26a69a' },
+            }],
+        };
+        echarts.init(document.getElementById('klineChart')).setOption(klineOption);
+
+        // ========== 收盘价折线图 ==========
+        var lineOption = {
+            backgroundColor: 'transparent',
+            tooltip: { trigger: 'axis' },
+            grid: { left: '8%', right: '3%', top: '10%', bottom: '12%' },
+            xAxis: {
+                type: 'category', data: stockData.dates,
+                boundaryGap: false,
+                axisLabel: { color: '#8899aa' },
+                axisLine: { lineStyle: { color: '#334455' } },
+            },
+            yAxis: {
+                type: 'value', scale: true,
+                axisLabel: { color: '#8899aa' },
+                splitLine: { lineStyle: { color: '#223344' } },
+            },
+            series: [{
+                name: '收盘价',
+                type: 'line',
+                data: stockData.close,
+                smooth: true,
+                lineStyle: { width: 3, color: '#00d2ff' },
+                areaStyle: {
+                    color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                        { offset: 0, color: 'rgba(0,210,255,0.4)' },
+                        { offset: 1, color: 'rgba(0,210,255,0.02)' },
+                    ]),
+                },
+                itemStyle: { color: '#00d2ff' },
+            }],
+        };
+        echarts.init(document.getElementById('lineChart')).setOption(lineOption);
+
+        // ========== 成交量柱状图 ==========
+        var volumeColors = [];
+        for (var i = 0; i < stockData.close.length - 1; i++) {
+            volumeColors.push(stockData.close[i+1] >= stockData.close[i] ? '#ef5350' : '#26a69a');
+        }
+
+        var volumeOption = {
+            backgroundColor: 'transparent',
+            tooltip: { trigger: 'axis' },
+            grid: { left: '8%', right: '3%', top: '10%', bottom: '12%' },
+            xAxis: {
+                type: 'category', data: stockData.dates,
+                axisLabel: { color: '#8899aa', rotate: 30 },
+                axisLine: { lineStyle: { color: '#334455' } },
+            },
+            yAxis: {
+                type: 'value',
+                axisLabel: { color: '#8899aa', formatter: function(v){ return (v/10000).toFixed(0)+'万'; } },
+                splitLine: { lineStyle: { color: '#223344' } },
+            },
+            series: [{
+                name: '成交量',
+                type: 'bar',
+                data: [1500000, 1800000, 2100000, 1900000, 1700000,
+                        2000000, 1600000, 1400000, 1750000, 2200000],
+                itemStyle: {
+                    color: function(params) {
+                        if (params.dataIndex === 0) return '#667eea';
+                        return params.dataIndex > 0 && stockData.close[params.dataIndex] >= stockData.close[params.dataIndex-1]
+                            ? '#ef5350' : '#26a69a';
+                    }
+                },
+                barWidth: '50%',
+            }],
+        };
+        echarts.init(document.getElementById('volumeChart')).setOption(volumeOption);
+
+        // 响应式
+        window.addEventListener('resize', function() {
+            echarts.getInstanceByDom(document.getElementById('klineChart'))?.resize();
+            echarts.getInstanceByDom(document.getElementById('lineChart'))?.resize();
+            echarts.getInstanceByDom(document.getElementById('volumeChart'))?.resize();
+        });
+    </script>
+</body>
+</html>
